@@ -35,7 +35,8 @@ class AirQualityCollector:
 
         try:
             sensors = self.client.air_quality_sensors()
-        except Exception:
+        except Exception as e:
+            print(f"scrape failed: {e}", flush=True)
             up.add_metric([], 0)
             yield up
             return
