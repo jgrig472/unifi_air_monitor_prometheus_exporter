@@ -1,5 +1,9 @@
 # unifi-air-exporter
 
+[![Docker](https://github.com/jgrig472/unifi_air_monitor_prometheus_exporter/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/jgrig472/unifi_air_monitor_prometheus_exporter/actions/workflows/docker-publish.yml)
+[![Docker Hub](https://img.shields.io/docker/v/jasona1246/unifi-air-exporter?label=docker%20hub)](https://hub.docker.com/r/jasona1246/unifi-air-exporter)
+[![GitHub release](https://img.shields.io/github/v/release/jgrig472/unifi_air_monitor_prometheus_exporter)](https://github.com/jgrig472/unifi_air_monitor_prometheus_exporter/releases)
+
 A Prometheus exporter for the [UniFi Vape Detection & Air Quality Sensor](https://store.ui.com/us/en/products/up-airquality), managed by UniFi Protect.
 
 It exposes CO2, PM1.0/2.5/4.0/10, VOC, TVOC, NOx, AQI, vape index, temperature, and humidity as Prometheus metrics, and ships with a ready-to-import Grafana dashboard.
