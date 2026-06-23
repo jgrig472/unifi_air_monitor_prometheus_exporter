@@ -265,7 +265,7 @@
       "id": 7,
       "type": "bargauge",
       "title": "PM Comparison (current)",
-      "description": "Current PM1.0, PM2.5, PM4.0, and PM10 readings side-by-side, colored using EPA-style PM2.5 health bands.",
+      "description": "Current PM1.0, PM2.5, PM4.0, and PM10 readings side-by-side, colored using EPA-style PM2.5 health bands. Each value is the concentration (µg/m³) of particles at or below that diameter in micrometers, and each channel is cumulative (PM10 includes everything counted in PM4.0, PM2.5, and PM1.0). PM1.0 = finest particles (smoke, ultrafine dust). PM2.5 = the standard air-quality benchmark (smoke, vehicle exhaust, cooking). PM4.0 = mid-range, less commonly reported. PM10 = coarse dust, pollen, mold spores.",
       "gridPos": { "x": 0, "y": 10, "w": 8, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
       "targets": [
@@ -302,7 +302,7 @@
       "id": 8,
       "type": "timeseries",
       "title": "PM Trend",
-      "description": "PM1.0, PM2.5, PM4.0, and PM10 particulate concentrations over time.",
+      "description": "PM1.0, PM2.5, PM4.0, and PM10 particulate concentrations (µg/m³) over time. The number is the particle diameter in micrometers that channel measures, and each channel is cumulative (PM10 includes PM4.0, PM2.5, and PM1.0). PM1.0 = finest particles (smoke, ultrafine dust). PM2.5 = the standard air-quality benchmark. PM4.0 = mid-range. PM10 = coarse dust, pollen, mold spores.",
       "gridPos": { "x": 8, "y": 10, "w": 16, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
       "targets": [
@@ -482,7 +482,7 @@
       "id": 13,
       "type": "heatmap",
       "title": "PM2.5 Intensity (calculated heatmap)",
-      "description": "Distribution of PM2.5 readings bucketed over time — highlights spikes that a line chart can mask.",
+      "description": "Distribution of PM2.5 readings bucketed over time — highlights spikes that a line chart can mask. PM2.5 = concentration (µg/m³) of particles ≤2.5µm in diameter, the standard particulate benchmark used in most air-quality reporting (wildfire smoke, vehicle exhaust, cooking smoke); small enough to get deep into the lungs.",
       "gridPos": { "x": 12, "y": 28, "w": 12, "h": 8 },
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
       "targets": [
