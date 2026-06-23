@@ -1,0 +1,10 @@
+services:
+  unifi-air-exporter:
+    build: .
+    image: unifi-air-exporter:latest
+    container_name: unifi-air-exporter
+    restart: unless-stopped
+    ports:
+      - "9840:9840"
+    env_file:
+      - .env

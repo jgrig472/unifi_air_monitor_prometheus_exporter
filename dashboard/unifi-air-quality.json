@@ -1,0 +1,535 @@
+{
+  "title": "UniFi Vape Detection & Air Quality Monitor",
+  "uid": "unifi-air-quality",
+  "description": "Live readings from a UniFi Protect Vape Detection & Air Quality sensor, served by the unifi-air-exporter Prometheus exporter.",
+  "tags": ["unifi", "air-quality", "vape-detection", "prometheus"],
+  "timezone": "browser",
+  "schemaVersion": 41,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "DS_PROMETHEUS",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {},
+        "label": "Prometheus",
+        "hide": 0
+      },
+      {
+        "name": "sensor_name",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+        "query": "label_values(unifi_air_quality_index, sensor_name)",
+        "label": "Sensor",
+        "multi": true,
+        "includeAll": true,
+        "current": { "text": "All", "value": ["$__all"] },
+        "refresh": 2,
+        "sort": 1
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 100,
+      "type": "row",
+      "title": "Overview",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 1 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 1,
+      "type": "gauge",
+      "title": "Air Quality Index",
+      "description": "0-50 Good, 51-100 Moderate, 101-150 Unhealthy for Sensitive Groups, 151-200 Unhealthy, 201-300 Very Unhealthy, 301-500 Hazardous.",
+      "gridPos": { "x": 0, "y": 1, "w": 6, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_quality_index{sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "{{sensor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "max": 500,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#37872D", "value": null },
+              { "color": "#EAB839", "value": 51 },
+              { "color": "#EF843C", "value": 101 },
+              { "color": "#E24D42", "value": 151 },
+              { "color": "#8F3F97", "value": 201 },
+              { "color": "#702882", "value": 301 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      }
+    },
+    {
+      "id": 2,
+      "type": "gauge",
+      "title": "Vape Detection Index",
+      "description": "0-100. Any sustained reading above ~1 indicates vape particulates were detected.",
+      "gridPos": { "x": 6, "y": 1, "w": 6, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_vape_index{sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "{{sensor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#37872D", "value": null },
+              { "color": "#EF843C", "value": 1 },
+              { "color": "#E24D42", "value": 5 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      }
+    },
+    {
+      "id": 3,
+      "type": "gauge",
+      "title": "CO2",
+      "description": "Indoor-air-quality guidance: <800ppm good, 800-1500 elevated, 1500-3000 poor, >3000 unhealthy. Sensor supports up to 40000ppm.",
+      "gridPos": { "x": 12, "y": 1, "w": 6, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_co2_ppm{sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "{{sensor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ppm",
+          "min": 0,
+          "max": 5000,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#37872D", "value": null },
+              { "color": "#EAB839", "value": 800 },
+              { "color": "#EF843C", "value": 1500 },
+              { "color": "#E24D42", "value": 3000 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Exporter Status",
+      "gridPos": { "x": 18, "y": 1, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_exporter_scrape_success"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "1": { "text": "UP", "color": "green" } } },
+            { "type": "value", "options": { "0": { "text": "DOWN", "color": "red" } } }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "graphMode": "none",
+        "colorMode": "background",
+        "justifyMode": "center",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Temperature",
+      "gridPos": { "x": 18, "y": 5, "w": 3, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_temperature_celsius{sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "{{sensor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] }
+        },
+        "overrides": []
+      },
+      "options": {
+        "graphMode": "area",
+        "colorMode": "value",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Humidity",
+      "gridPos": { "x": 21, "y": 5, "w": 3, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_humidity_percent{sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "{{sensor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 1,
+          "min": 0,
+          "max": 100,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] }
+        },
+        "overrides": []
+      },
+      "options": {
+        "graphMode": "area",
+        "colorMode": "value",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      }
+    },
+    {
+      "id": 200,
+      "type": "row",
+      "title": "Particulate Matter",
+      "gridPos": { "x": 0, "y": 9, "w": 24, "h": 1 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 7,
+      "type": "bargauge",
+      "title": "PM Comparison (current)",
+      "gridPos": { "x": 0, "y": 10, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "{__name__=~\"unifi_air_pm.*_ugm3\", sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "{{__name__}} - {{sensor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "µg/m³",
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#37872D", "value": null },
+              { "color": "#EAB839", "value": 12 },
+              { "color": "#EF843C", "value": 35 },
+              { "color": "#E24D42", "value": 55 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      }
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "PM Trend",
+      "gridPos": { "x": 8, "y": 10, "w": 16, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "{__name__=~\"unifi_air_pm.*_ugm3\", sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "{{__name__}} - {{sensor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "µg/m³",
+          "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 15, "spanNulls": true }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull", "max"] } }
+    },
+    {
+      "id": 300,
+      "type": "row",
+      "title": "Gases & VOC",
+      "gridPos": { "x": 0, "y": 18, "w": 24, "h": 1 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "CO2 Trend",
+      "gridPos": { "x": 0, "y": 19, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_co2_ppm{sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "{{sensor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ppm",
+          "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 10 },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 1500 },
+              { "color": "red", "value": 3000 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } }
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "VOC / TVOC / NOx Index",
+      "gridPos": { "x": 8, "y": 19, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_voc_index{sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "VOC - {{sensor_name}}"
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_tvoc_index{sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "TVOC - {{sensor_name}}"
+        },
+        {
+          "refId": "C",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_nox_index{sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "NOx - {{sensor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 10, "spanNulls": true }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } }
+    },
+    {
+      "id": 11,
+      "type": "state-timeline",
+      "title": "Air Quality Index - Banded History",
+      "description": "AQI value over time, colored by the same Good/Moderate/Unhealthy/Hazardous bands as the AQI gauge.",
+      "gridPos": { "x": 16, "y": 19, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_quality_index{sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "{{sensor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#37872D", "value": null },
+              { "color": "#EAB839", "value": 51 },
+              { "color": "#EF843C", "value": 101 },
+              { "color": "#E24D42", "value": 151 },
+              { "color": "#8F3F97", "value": 201 },
+              { "color": "#702882", "value": 301 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": { "mergeValues": true, "showValue": "never", "rowHeight": 0.9 }
+    },
+    {
+      "id": 400,
+      "type": "row",
+      "title": "Environment",
+      "gridPos": { "x": 0, "y": 27, "w": 24, "h": 1 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Temperature & Humidity",
+      "gridPos": { "x": 0, "y": 28, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_temperature_celsius{sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "Temperature - {{sensor_name}}"
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_humidity_percent{sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "Humidity - {{sensor_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 10 }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byRegexp", "options": "Humidity.*" },
+            "properties": [
+              { "id": "unit", "value": "percent" },
+              { "id": "custom.axisPlacement", "value": "right" }
+            ]
+          }
+        ]
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } }
+    },
+    {
+      "id": 13,
+      "type": "heatmap",
+      "title": "PM2.5 Intensity (calculated heatmap)",
+      "description": "Distribution of PM2.5 readings bucketed over time — highlights spikes that a line chart can mask.",
+      "gridPos": { "x": 12, "y": 28, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_pm2_5_ugm3{sensor_name=~\"$sensor_name\"}",
+          "legendFormat": "{{sensor_name}}",
+          "format": "time_series"
+        }
+      ],
+      "options": {
+        "calculate": true,
+        "color": { "mode": "scheme", "scheme": "Turbo" },
+        "yAxis": { "unit": "µg/m³" }
+      }
+    },
+    {
+      "id": 500,
+      "type": "row",
+      "title": "Diagnostics",
+      "gridPos": { "x": 0, "y": 36, "w": 24, "h": 1 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 14,
+      "type": "state-timeline",
+      "title": "Exporter Scrape Success",
+      "gridPos": { "x": 0, "y": 37, "w": 24, "h": 6 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "unifi_air_exporter_scrape_success"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "1": { "text": "UP", "color": "green" } } },
+            { "type": "value", "options": { "0": { "text": "DOWN", "color": "red" } } }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": { "mergeValues": true, "showValue": "never", "rowHeight": 0.9 }
+    }
+  ]
+}
