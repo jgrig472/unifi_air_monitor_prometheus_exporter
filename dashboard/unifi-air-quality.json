@@ -16,7 +16,7 @@
         "query": "prometheus",
         "current": {},
         "label": "Prometheus",
-        "hide": 0
+        "hide": 2
       },
       {
         "name": "sensor_name",
