@@ -18,7 +18,10 @@ class ProtectClient:
     """
 
     def __init__(self, host, username, password, verify_tls=True, timeout=10):
-        self.host = host.rstrip("/")
+        host = host.strip().rstrip("/")
+        if "://" in host:
+            host = host.split("://", 1)[1]
+        self.host = host
         self.username = username
         self.password = password
         self.timeout = timeout
